@@ -1,0 +1,380 @@
+##Supervised machine learning is superior to indicator value inference to establish 
+##ecological quality around salmon aquaculture cages from eDNA metabarcodes
+#Frühe L, Cordier T, Dully V, Pawlowski J, Wilding T A, Stoeck T
+
+####DISCLAIMER####
+#This supplementary file provide the full bioninformatic and statistic procedures used in 
+#this paper. Codes might have to be adapted to other systems and data. 
+
+-----------------------------
+#1.Inferring ASVs using customized dada2 script starting with fastqfiles without primers
+-----------------------------
+#this script was used for proccessing both ciliate V9 and bacterial V3/V4 HTS data, 
+#particular changes for each gene region are marked within the script with abbreviations BAC and CIL
+
+#set parameters for execution with bash 
+run<-commandArgs()[7]
+ncpus<-as.numeric(commandArgs()[8])
+  
+library(dada2)
+library(plyr)
+library(doParallel)
+  
+#set working directory and load demultiplexed fastq files with clipped primers 
+path <- file.path("/yourfiledirectory/")
+fnFs <- list.files(path, pattern=paste0(run,".R1.cut.fastq.gz"), full.names = TRUE)
+fnRs <- list.files(path, pattern=paste0(run,".R2.cut.fastq.gz"), full.names = TRUE)
+all.equal(sapply(strsplit(basename(fnFs), "."), `[`, 1),
+            sapply(strsplit(basename(fnRs), "."), `[`, 1)) # TRUE
+
+#first filter step 
+path.filt <- file.path("/yourfiledirectory")
+dir.create(path.filt)
+filtFs <- file.path(path.filt, gsub("cut","filt",basename(fnFs)))
+filtRs <- file.path(path.filt, gsub("cut","filt",basename(fnRs)))
+  
+#check quality of reads for the first 5 samples to set treshhold for trimming fwd and rvs reads
+pdf(paste0(run,"_quality_fwd.pdf"),width=7,height=4)
+plotQualityProfile(fnFs[1:5])
+dev.off()
+pdf(paste0(run,"_quality_rvs.pdf"),width=7,height=4)
+plotQualityProfile(fnRs[1:5])
+dev.off()
+
+##FILTER AND TRIM##
+##BAC_parameters
+track <- filterAndTrim(fwd=fnFs, rev=fnRs, filt=filtFs, filt.rev=filtRs,
+                         truncLen=230, maxEE=1,
+                         rm.phix=TRUE, multithread = ncpus)
+
+##CIL_parameters
+track <- filterAndTrim(fwd=fnFs, rev=fnRs, filt=filtFs, filt.rev=filtRs,
+                       truncLen=130, maxEE=1,
+                       rm.phix=TRUE, multithread = ncpus)
+
+
+saveRDS(track, file.path(path, "filtered",paste0(run,"_track.rds")))
+
+#learn & plot errror rates
+errF <- learnErrors(filtFs, multithread=ncpus)
+errR <- learnErrors(filtRs, multithread=ncpus)
+pdf(paste0(run,"_errorrates_fwd.pdf"),width=5,height=5)
+  plotErrors(errF, nominalQ=TRUE)
+  dev.off()
+pdf(paste0(run,"_errorrates_rvs.pdf"),width=5,height=5)
+  plotErrors(errR, nominalQ=TRUE)
+  dev.off()
+
+#set names correctly and save names 
+identical(sapply(strsplit(basename(filtFs), "."), `[`, 1),
+          sapply(strsplit(basename(filtRs), "."), `[`, 1)) # TRUE
+sams <- sapply(strsplit(basename(filtFs), "\\."), `[`, 1)
+names(sams)<-sams
+saveRDS(sams, file.path(path.filt,paste0(run,"_sam.rds")))
+names(filtFs)<-sams
+names(filtRs)<-sams
+rds <- file.path(path.filt, "rds")
+dir.create(rds)
+
+## DENOISING AND MERGING FWD and RVS##  
+cl<-makeCluster(ncpus)
+registerDoParallel(cl)
+derepF<-llply(filtFs,derepFastq,.parallel=T,.paropts=list(.packages=c('dada2')))
+derepR<-llply(filtRs,derepFastq,.parallel=T,.paropts=list(.packages=c('dada2')))
+dadaF<-llply(derepF,dada,errF,.parallel=T,.paropts=list(.packages=c('dada2')))
+dadaR<-llply(derepR,dada,errR,.parallel=T,.paropts=list(.packages=c('dada2')))
+mergers<-llply(sams,function(i) {
+    mergePairs(dadaF[[i]], derepF[[i]], dadaR[[i]], derepR[[i]],minOverlap=20, maxMismatch=2)
+  },.parallel=T,.paropts=list(.packages=c('dada2'),.export=c('derepF','derepR','dadaF','dadaR')))
+  stopCluster(cl)
+  
+path.merg<-file.path("yourdirectory/mergers")
+  for(i in sams) {
+    saveRDS(mergers[[i]], file.path(path.merg, paste(run,i,"merger.rds",sep="_")))
+  }
+# to read them back again:
+mergers<-llply(sams,function(x) {readRDS(file.path(path.filt, paste(run,x,"merger.rds",sep="_")))})
+  
+# Make sequence table and check for chimera:
+names(mergers)<-paste(run,names(mergers),sep="#")
+sta <- makeSequenceTable(mergers)
+seqtab <- removeBimeraDenovo(sta, method = "consensus", multithread=ncpus)
+saveRDS(seqtab,file.path(path.filt, paste0(run,"_sta.rds")))
+  
+#track reads through pipeline
+getN <- function(x) sum(getUniques(x))
+track_reads <- cbind(track, sapply(dadaF, getN), sapply(dadaR, getN), sapply(mergers, getN))
+colnames(track_reads) <- c("input", "filtered", "denoisedF", "denoisedR", "merged")
+rownames(track_reads) <- sams
+saveRDS(track_reads,file.path(path.merg,paste0(run,"_reads.rds")))
+
+##OUTPUT of FINALIZED ASV_TABLE##
+sams<-ldply(runs,function(x){
+  cbind(run=x,sample=readRDS(file.path(path,paste0(x,"_sam", ".rds"))))
+}) %>% mutate_all(as.vector)
+
+mergers <- alply(sams,1,function(x) readRDS(file.path(path, paste(x[1],x[2],"merger.rds",sep="_"))))
+names(mergers) <- apply(sams,1,paste,collapse="_")
+
+sta <- makeSequenceTable(mergers)
+seqtab <- removeBimeraDenovo(sta, method = "consensus", multithread=TRUE)
+mat<-cbind.data.frame(asv=paste0("ASV_",sprintf(paste0("%0",nchar(ncol(seqtab)),"d"),1:ncol(seqtab))),t(seqtab))
+write.table(mat,file.path(path,"ASV_sequence_data.tsv"),sep="\t",col.names=T,row.names=F,quote=F)
+write(paste(paste0(">",mat$asv),rownames(mat),sep="\n"),file=file.path(path,"asv_sequence_data.fasta"),ncolumns=1)
+
+-----------------------------
+#2.Design Map of Sampling Stations
+-----------------------------
+no <- map_data("world", "Norway", xlim=c(0,35), ylim=c(50, 72))
+ggno <- ggplot() + geom_polygon(data = no, aes(x=long, y = lat, group = group)) + 
+    coord_fixed(2.3)
+
+labs_nw <- data.frame(
+  long = c(6.923306, 15.387694, 5.327639, 15.509139, 21.598944, 21.827556, 6.980139 ),
+  lat = c(62.78335, 67.532806, 62.139806, 67.460056, 69.909889, 69.852611, 62.802639),
+  names = c("AK", "BJ", "BT", "NK", "HJ", "KA", "ST"),
+  stringsAsFactors = FALSE
+)  
+
+plot_nw <- ggno + 
+  geom_point(data = labs_nw, aes(x = long, y = lat), color = "black", size = 1.0) +
+  geom_point(data = labs_nw, aes(x = long, y = lat), color = "black", size = 1.0) +
+  geom_point(data = labs_nw, aes(x = long, y = lat), color = "black", size = 1.0) +
+  geom_point(data = labs_nw, aes(x = long, y = lat), color = "black", size = 1.0) +
+  geom_point(data = labs_nw, aes(x = long, y = lat), color = "black", size = 1.0) +
+  geom_point(data = labs_nw, aes(x = long, y = lat), color = "black", size = 1.0) + 
+  geom_point(data = labs_nw, aes(x = long, y = lat), color = "black", size = 1.0) +
+  theme_void() +
+  xlab("Longitude") + 
+  ylab("Latitude") +
+  geom_label_repel(data=labs_nw, aes(long,lat, label = names), color = 'gray40',
+                   size = 4.5) +
+  scaleBar(lon = 12, lat = 58, distanceLon = 200, distanceLat = 20, 
+           distanceLegend = 60, dist.unit = "km",arrow.length = 100, arrow.distance = 80, arrow.North.size = 6)
+
+-----------------------------
+#3.Bray-Curtis Distances and NMDS
+-----------------------------
+library(vegan)
+library(plyr)
+library(dplyr)
+library(tidyr)
+library(tibble)
+library(ggplot2)
+
+#upload ASV_Table without taxonomic assignment and metadata with sample informations
+
+env_meta <- read.csv2("Norway_env.", head=T)
+input <- read.table("ASV_Table.csv", head=T, sep=";")
+table <- as.matrix(input)
+table <- t(table)
+
+#calculate BC Distances and save in nmds object
+nmds <- metaMDS(table, distance='bray', try=30, trymax=50, )
+nmds$stress
+stress_tmp <- nmds$stress 
+
+nmds_df <-as.data.frame(nmds$points) %>%
+  rownames_to_column("sample") %>%
+  left_join(env_meta) %>%
+  droplevels ()
+
+#fit the environmental parameters from env_table to your plot
+fit_nmds<-envfit(nmds,env_meta)
+fit_nmds_df<-data.frame(scores(fit_nmds,display="bp"),R2=fit_nmds$vectors$r,pval=fit_nmds$vectors$pvals) %>%
+  rownames_to_column("param")
+
+#nmds with coloring EQ-Groups
+plot_nmds <- ggplot(nmds_df,aes(MDS1,MDS2,color=as.character(EQ),shape=Farm)) +
+  geom_point(size=2) +
+  labs(color="EQ") +
+  scale_colour_manual(values=c("mediumseagreen","gold","red","darkred"))+
+  geom_text(data=fit_nmds_df,aes(NMDS1*1.2,NMDS2*1.2,label=param),inherit.aes=F) +
+  geom_segment(data=fit_nmds_df,aes(xend=NMDS1,yend=NMDS2),x=0,y=0,
+               arrow=arrow(length=unit(0.5,"cm")),inherit.aes=F)+
+  scale_shape_manual(values=c(8,15,16,17,18,12,1))+
+  theme_classic()
+
+pdf("NMDS_NOR_Cil_impIndVal.pdf", width=8, height=8)
+plot_nmds
+dev.off()
+
+
+-----------------------------
+#4.IndVal Calculation and Prediction Plots
+-----------------------------
+library(labdsv)
+library(vegan)
+library(plyr)
+library(dplyr)
+library(tidyr)
+library(tibble)
+library(ggplot2)
+library(ltm)
+
+# upload ASV table
+ASV_table_ORG <-read.table("input_ASV_table.csv",h=T,sep=",",quote="",stringsAsFactors=F)
+matrix_all_ORG<-t(ASV_table_ORG[,2:154])
+colnames(matrix_all_ORG)<-paste0("ASV_",sprintf(paste0("%0",nchar(max(ASV_table_ORG$ASV)),"d"),ASV_table_ORG$ASV))
+
+# remove ASVs with zero reads
+matrix_ab_ORG<-matrix_tmp_ORG[,which(colSums(matrix_all_ORG)>0)]
+relab_ab_ORG<-decostand(matrix_ab_ORG,"total")
+
+#load environmental data
+env_meta_ORG<-read.csv("input_env_table.csv", sep=",", dec=".")
+env_meta_ab_ORG<-filter(env_meta_ORG,sample %in% rownames(matrix_ab_ORG)) %>%
+  droplevels()
+
+#create relative abundance data frame
+relab_df_ORG<-data.frame(relab_ab_ORG) %>% rownames_to_column("sample") %>%
+  gather("ASV","ra",-sample)
+
+
+# IndVal Calculation using labdvs package and infer EQs of clusters 
+set.seed(12345)
+ivl_res_all_ORG <- indval(relab_ab_ORG, env_meta_ab_ORG$EQ)
+ivl_res_all_df_ORG<-cbind.data.frame(cluster=ivl_res_all_ORG$maxcls,indval=ivl_res_all_ORG$indcls,pval=ivl_res_all_ORG$pval) %>%
+  rownames_to_column("ASV") %>% 
+  mutate(EQ=mapvalues(cluster,1:max(cluster),c(3,2,4,5)))
+
+## check in which EQ-groups an IndASV occurs mostly by: 
+relab_df_ORG %>% filter(ASV=="ASV_000049") %>% filter(ra>0.5) %>% left_join(env_meta_ORG) %>% group_by(EQ) %>% summarize(count=n())
+
+## filter created IndASV dataframe for significance level p<=0.05 
+ivl_df_sig_ORG <- filter(ivl_res_all_df_ORG, pval <= 0.05)
+
+## filter created significant IndASV data frame for top 50 IndASV regarding IndVal + plot
+ivl_df_sig_ORG_50 <- ivl_df_sig_ORG[order(ivl_df_sig_ORG[,3], decreasing = TRUE),] %>% top_n(50, indval)
+write.csv(ivl_df_sig_ORG_50, "indicator_asvs_ORG_top50.csv")
+plot_indasvs_ORG<-ggplot(data=ivl_df_sig_ORG_50, aes(x= reorder(ASV, indval) , y=indval)) +
+  geom_bar(stat="identity") +
+  coord_flip() + theme_minimal() + xlab("") + ggtitle("ORGiates - Indicator ASVs")
+
+### AMBI calculation, simpmlified formula, percentages of IndASVs per EQ per sample
+
+## create presence table of IndASV per sample
+presence_ORG <- relab_ab_ORG[,ivl_df_sig_ORG$ASV]
+presence_df_ORG<-data.frame(presence_ORG) %>% rownames_to_column("sample") %>%
+  gather("ASV","ra",-sample) %>% filter(ra>0) %>% left_join(ivl_df_sig_ORG) %>%
+  select(sample, ASV, EQ)
+
+sample_names2_ORG <-as.data.frame(presence_df_ORG) %>%
+  select(sample) %>%
+  distinct()
+
+### loop START
+result2_ORG <- matrix(nrow = 1, ncol = length(t(sample_names2_ORG)))
+
+# loop throuhg all samples
+for(i in 1:nrow(sample_names2_ORG)) {
+  
+  tmp_result_all2 <- vector("list", 5)
+  
+# loop through all EQs
+for(j in 1:5) {
+    
+  a_tmp_all2 <- presence_df_ORG %>%
+      filter(sample == as.character((t(sample_names2_ORG[[i,1]])))) %>%
+      group_by(EQ) %>% summarise(count=n()) %>% mutate (all=sum(count)) %>%
+      mutate(perc= count / all * 100) %>% 
+      filter(EQ==j) %>%
+      select(perc) 
+    tmp_result_all2[[j]] <- as.numeric(a_tmp_all2)
+    tmp_result_all2[is.na(tmp_result_all2)] = 0
+    
+    
+  }
+  
+  result2_ORG[[1,i]] <- ((0*tmp_result_all2[[1]]) + (1.5*tmp_result_all2[[2]]) + 
+                           (3*tmp_result_all2[[3]]) + (4.5*tmp_result_all2[[4]]) + 
+                           (6*tmp_result_all2[[5]])) / (100)
+}
+
+
+### loop END
+
+result_df2_ORG <- as.data.frame(result2_ORG, col.names = sample_names2_ORG)
+colnames(result_df2_ORG) <-  (t(sample_names2_ORG))
+result_df_t2_ORG <- as.data.frame(t(result_df2_ORG))
+colnames(result_df_t2_ORG)[1] <- "ORGMBI"
+ORGMBI_s_ORG<- select (result_df_t2_ORG, ORGMBI) %>% rownames_to_column("sample")
+
+## create data frame with calculated AMBI and actual macrofauna AMBI
+all_ambis_ORG <- ORGMBI_s_ORG %>% left_join(env_meta_ab_ORG, by="sample") 
+
+## create standard deviation table for errorbars
+errorbar_ORG <- as.data.frame(all_ambis_ORG) %>% # the names of the new data frame and the data frame to be summarised
+  group_by(group, Farm) %>%   # the grouping variable
+  summarise(ORGMBI_g = mean(ORGMBI), 
+            AMBI_g= mean(AMBI), # calculates the mean of each group
+            sd_ORG = sd(ORGMBI), # calculates the standard deviation of each group
+            n_ORG = n(),  # calculates the sample size per group
+            SE_ORG = sd(ORGMBI)/sqrt(n()))
+errorbar_ORG[is.na(errorbar_ORG)] <- 0
+
+## plot macrofauna AMBI against calculated AMBI, calculate straight-line equation beforehand
+a_tmp_ORG <- summary(lm(ORGMBI_g ~ AMBI_g,data=errorbar_ORG))
+plot_AMBI_ORG<-ggplot(data = errorbar_ORG,aes(x = AMBI_g,y = ORGMBI_g, group=Farm)) +
+  scale_x_continuous(name="AMBI (macrofauna)", limits=c(0, 6.1), breaks = c(0,1,2,3,4,5,6)) +
+  scale_y_continuous(name="ORG eDNA AMBI", limits=c(0, 6.1), breaks = c(0,1,2,3,4,5,6)) +
+  geom_point(aes(x=AMBI_g, y=ORGMBI_g, shape=Farm, color=Farm), size=2)+
+  scale_shape_manual(values=c(1,2,3,4,5,6,7))+
+  scale_color_manual(values=c("black", "red", "green3", "blue", "cyan", "magenta", "yellow"))+
+  geom_smooth(data=errorbar_ORG,aes(x=AMBI_g, y=ORGMBI_g),method="lm",inherit.aes=F) +
+  geom_errorbar(data=errorbar_ORG,aes(ymin = ORGMBI_g-sd_ORG, ymax = ORGMBI_g+sd_ORG, color=Farm), width=0.1)+
+  annotate("rect", xmin = 0, xmax = 1.2, ymin = 0, ymax = 1.2, alpha = .2)+ 
+  annotate("rect", xmin = 1.2, xmax = 3.3, ymin = 1.2, ymax = 3.3, alpha = .2)+ 
+  annotate("rect", xmin = 3.3, xmax = 4.3, ymin = 3.3, ymax = 4.3, alpha = .2)+ 
+  annotate("rect", xmin = 4.3, xmax = 5.5, ymin = 4.3, ymax = 5.5, alpha = .2)+ 
+  annotate("rect", xmin = 5.5, xmax = 6.0, ymin = 5.5, ymax = 6,0, alpha = .2) + theme_classic()
+
+## discrepancies between macrofauna EQs and microbial EQs
+EQ_ORG <- errorbar_ORG %>%   mutate(AMBI_EQ=ifelse(AMBI_g<=1.2,1,ifelse(AMBI_g<=3.3,2,ifelse(AMBI_g<=4.3,3,ifelse(AMBI_g<=5.5,4,5)))),
+                                    eAMBI_EQ=ifelse(ORGMBI_g<=1.2,1,ifelse(ORGMBI_g<=3.3,2,ifelse(ORGMBI_g<=4.3,3,ifelse(ORGMBI_g<=5.5,4,5))))) %>%
+  mutate(abw_EQ=eAMBI_EQ-AMBI_EQ)
+
+arg_ORG <- group_by(EQ_ORG,abw_EQ) %>% summarize(count=n()) %>% mutate(perc=((count/55)*100)) 
+plot_arg_ORG <- arg_ORG %>% ggplot(aes(abw_EQ, perc)) +
+  geom_bar(stat="identity")+
+  theme_classic()+
+  scale_y_continuous(limits=c(0,100), breaks=c(0,20,40,60,80,100))
+
+### Correction using straight-line equation intercept (y=+0) & slope (x=1)
+
+## calculate corrected eDNA AMBI
+errorbar_ORG_adj <- as.data.frame(errorbar_ORG) %>% 
+  mutate(adj_ambi=((errorbar_ORG$ORGMBI_g-(a_tmp_ORG$coefficients[1]))/((a_tmp_ORG$coefficients[2]))))
+
+## plot macrofauna AMBI against calculated AMBI, calculate second straight-line equation beforehand
+maxambi_ORG <- max(errorbar_ORG_adj$adj_ambi)
+z_tmp_ORG <- summary(lm(adj_ambi ~ AMBI_g,data=errorbar_ORG_adj))
+plot_AMBI_ORG_adj<-ggplot(data = errorbar_ORG_adj,aes(x = AMBI_g,y = adj_ambi, group=Farm)) +
+  scale_x_continuous(name="AMBI (macrofauna)", limits=c(0, 6.1), breaks = c(0,1,2,3,4,5,6)) +
+  scale_y_continuous(name=" ORG eDNA AMBI adjusted", limits=c(-1, maxambi_ORG), breaks = c(-1,0,1,2,3,4,5,6,7,8,9,10)) +
+  geom_point(aes(x=AMBI_g, y=adj_ambi, shape=Farm, color=Farm), size=2)+
+  scale_shape_manual(values=c(1,2,3,4,5,6,7))+
+  scale_color_manual(values=c("black", "red", "green3", "blue", "cyan", "magenta", "yellow"))+
+  geom_smooth(data=errorbar_ORG_adj,aes(x=AMBI_g, y=adj_ambi),method="lm",inherit.aes=F) +
+  geom_errorbar(data=errorbar_ORG_adj,aes(ymin = adj_ambi-sd_ORG, ymax = adj_ambi+sd_ORG, color=Farm), width=0.1)+
+  annotate("rect", xmin = 0, xmax = 1.2, ymin = 0, ymax = 1.2,
+           alpha = .2)+ annotate("rect", xmin = 1.2, xmax = 3.3, ymin = 1.2, ymax = 3.3,
+                                 alpha = .2)+ annotate("rect", xmin = 3.3, xmax = 4.3, ymin = 3.3, ymax = 4.3,
+                                                       alpha = .2)+ annotate("rect", xmin = 4.3, xmax = 5.5, ymin = 4.3, ymax = 5.5,
+                                                                             alpha = .2)+ annotate("rect", xmin = 5.5, xmax = 6.0, ymin = 5.5, ymax = maxambi_ORG,
+                                                                                                   alpha = .2)+ theme_classic()
+
+## discrepancies between macrofauna EQs and microbial EQs
+EQ_adj_ORG <- errorbar_ORG_adj %>%   mutate(AMBI_EQ=ifelse(AMBI_g<=1.2,1,ifelse(AMBI_g<=3.3,2,ifelse(AMBI_g<=4.3,3,ifelse(AMBI_g<=5.5,4,5)))),
+                                            adj_ambi_EQ=ifelse(adj_ambi<=1.2,1,ifelse(adj_ambi<=3.3,2,ifelse(adj_ambi<=4.3,3,ifelse(adj_ambi<=5.5,4,5))))) %>%
+  mutate(abw_EQ=adj_ambi_EQ-AMBI_EQ)
+a_cor_ORG <- barplot(table(EQ_adj_ORG$abw_EQ))
+sum(table(EQ_adj_ORG$abw_EQ))
+arg_ORG_adj <- group_by(EQ_adj_ORG,abw_EQ) %>% summarize(count=n()) %>% mutate(perc=((count/55)*100))
+plot_arg_ORG_adj <- arg_ORG_adj %>% ggplot(aes(abw_EQ, perc)) +
+  geom_bar(stat="identity")+
+  theme_classic()+
+  scale_y_continuous(limits=c(0,100), breaks=c(0,20,40,60,80,100))
+
+  
+

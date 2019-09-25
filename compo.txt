@@ -1,0 +1,153 @@
+Country	Farm	Samplename	Locality	Station	Grab	Replicate	Distance	AMBI	ESG
+Norway	Aukrasanden	AK_0_G1_RepA	Aukrasanden	1	1	1	0	5,969388	5
+Norway	Aukrasanden	AK_0_G1_RepB	Aukrasanden	1	1	2	0	5,969388	5
+Norway	Aukrasanden	AK_0_G1_RepC	Aukrasanden	1	1	3	0	5,969388	5
+Norway	Aukrasanden	AK_0_G2_RepA	Aukrasanden	1	2	4	0	5,968531	5
+Norway	Aukrasanden	AK_0_G2_RepB	Aukrasanden	1	2	5	0	5,968531	5
+Norway	Aukrasanden	AK_0_G2_RepC	Aukrasanden	1	2	6	0	5,968531	5
+Norway	Aukrasanden	AK_1530_G1_RepA	Aukrasanden	2	1	1	1530	1,30127	2
+Norway	Aukrasanden	AK_1530_G1_RepB	Aukrasanden	2	1	2	1530	1,30127	2
+Norway	Aukrasanden	AK_1530_G1_RepC	Aukrasanden	2	1	3	1530	1,30127	2
+Norway	Aukrasanden	AK_1530_G2_RepA	Aukrasanden	2	2	4	1530	1,389163	2
+Norway	Aukrasanden	AK_1530_G2_RepB	Aukrasanden	2	2	5	1530	1,389163	2
+Norway	Aukrasanden	AK_1530_G2_RepC	Aukrasanden	2	2	6	1530	1,389163	2
+Norway	Aukrasanden	AK_630_G1_RepA	Aukrasanden	3	1	1	630	2,408922	2
+Norway	Aukrasanden	AK_630_G1_RepB	Aukrasanden	3	1	2	630	2,408922	2
+Norway	Aukrasanden	AK_630_G1_RepC	Aukrasanden	3	1	3	630	2,408922	2
+Norway	Aukrasanden	AK_630_G2_RepA	Aukrasanden	3	2	4	630	1,694056	2
+Norway	Aukrasanden	AK_630_G2_RepB	Aukrasanden	3	2	5	630	1,694056	2
+Norway	Aukrasanden	AK_630_G2_RepC	Aukrasanden	3	2	6	630	1,694056	2
+Norway	Bjørnsvik	BJ_0_G1_RepA	Bjørnsvik	1	1	1	0	4,447143	4
+Norway	Bjørnsvik	BJ_0_G1_RepB	Bjørnsvik	1	1	2	0	4,447143	4
+Norway	Bjørnsvik	BJ_0_G1_RepC	Bjørnsvik	1	1	3	0	4,447143	4
+Norway	Bjørnsvik	BJ_0_G2_RepA	Bjørnsvik	1	2	1	0	4,527226	4
+Norway	Bjørnsvik	BJ_0_G2_RepB	Bjørnsvik	1	2	2	0	4,527226	4
+Norway	Bjørnsvik	BJ_0_G2_RepC	Bjørnsvik	1	2	3	0	4,527226	4
+Norway	Bjørnsvik	BJ_100_G1_RepA	Bjørnsvik	2	1	1	100	3,883429	3
+Norway	Bjørnsvik	BJ_100_G1_RepB	Bjørnsvik	2	1	2	100	3,883429	3
+Norway	Bjørnsvik	BJ_100_G1_RepC	Bjørnsvik	2	1	3	100	3,883429	3
+Norway	Bjørnsvik	BJ_100_G2_RepA	Bjørnsvik	2	2	1	100	4,790598	4
+Norway	Bjørnsvik	BJ_100_G2_RepB	Bjørnsvik	2	2	2	100	4,790598	4
+Norway	Bjørnsvik	BJ_100_G2_RepC	Bjørnsvik	2	2	3	100	4,790598	4
+Norway	Bjørnsvik	BJ_280_G1_RepA	Bjørnsvik	3	1	1	280	1,794479	2
+Norway	Bjørnsvik	BJ_280_G1_RepB	Bjørnsvik	3	1	2	280	1,794479	2
+Norway	Bjørnsvik	BJ_280_G1_RepC	Bjørnsvik	3	1	3	280	1,794479	2
+Norway	Bjørnsvik	BJ_280_G2_RepA	Bjørnsvik	3	2	4	280	2,602687	2
+Norway	Bjørnsvik	BJ_280_G2_RepB	Bjørnsvik	3	2	5	280	2,602687	2
+Norway	Bjørnsvik	BJ_280_G2_RepC	Bjørnsvik	3	2	6	280	2,602687	2
+Norway	Bjørnsvik	BJ_38_G1_RepA	Bjørnsvik	4	1	1	38	5,099777	5
+Norway	Bjørnsvik	BJ_38_G1_RepB	Bjørnsvik	4	1	2	38	5,099777	5
+Norway	Bjørnsvik	BJ_38_G2_RepA	Bjørnsvik	4	2	1	38	5,208406	5
+Norway	Bjørnsvik	BJ_38_G2_RepB	Bjørnsvik	4	2	2	38	5,208406	5
+Norway	Bjørnsvik	BJ_38_G2_RepC	Bjørnsvik	4	2	3	38	5,208406	5
+Norway	Beitveitnes	BV_0_G1_RepA	Beitveitnes	1	1	1	0	5,980048	5
+Norway	Beitveitnes	BV_0_G1_RepB	Beitveitnes	1	1	2	0	5,980048	5
+Norway	Beitveitnes	BV_0_G1_RepC	Beitveitnes	1	1	3	0	5,980048	5
+Norway	Beitveitnes	BV_0_G2_RepA	Beitveitnes	1	2	4	0	5,99115	5
+Norway	Beitveitnes	BV_0_G2_RepB	Beitveitnes	1	2	5	0	5,99115	5
+Norway	Beitveitnes	BV_0_G2_RepC	Beitveitnes	1	2	6	0	5,99115	5
+Norway	Beitveitnes	BV_1110_G1_RepA	Beitveitnes	2	1	1	1110	2,301724	2
+Norway	Beitveitnes	BV_1110_G1_RepB	Beitveitnes	2	1	2	1110	2,301724	2
+Norway	Beitveitnes	BV_1110_G1_RepC	Beitveitnes	2	1	3	1110	2,301724	2
+Norway	Beitveitnes	BV_1110_G2_RepA	Beitveitnes	2	2	4	1110	2,145051	2
+Norway	Beitveitnes	BV_1110_G2_RepB	Beitveitnes	2	2	5	1110	2,145051	2
+Norway	Beitveitnes	BV_1110_G2_RepC	Beitveitnes	2	2	6	1110	2,145051	2
+Norway	Beitveitnes	BV_150_G1_RepA	Beitveitnes	3	1	1	150	5,835249	5
+Norway	Beitveitnes	BV_150_G1_RepB	Beitveitnes	3	1	2	150	5,835249	5
+Norway	Beitveitnes	BV_150_G1_RepC	Beitveitnes	3	1	3	150	5,835249	5
+Norway	Beitveitnes	BV_150_G2_RepA	Beitveitnes	3	2	4	150	5,675926	5
+Norway	Beitveitnes	BV_150_G2_RepB	Beitveitnes	3	2	5	150	5,675926	5
+Norway	Beitveitnes	BV_150_G2_RepC	Beitveitnes	3	2	6	150	5,675926	5
+Norway	Beitveitnes	BV_430_G1_RepA	Beitveitnes	4	1	1	430	2,2875	2
+Norway	Beitveitnes	BV_430_G1_RepB	Beitveitnes	4	1	2	430	2,2875	2
+Norway	Beitveitnes	BV_430_G1_RepC	Beitveitnes	4	1	3	430	2,2875	2
+Norway	Beitveitnes	BV_430_G2_RepA	Beitveitnes	4	2	4	430	2,301915	2
+Norway	Beitveitnes	BV_430_G2_RepB	Beitveitnes	4	2	5	430	2,301915	2
+Norway	Beitveitnes	BV_430_G2_RepC	Beitveitnes	4	2	6	430	2,301915	2
+Norway	Beitveitnes	BV_75_G1_RepA	Beitveitnes	5	1	1	75	5,96995	5
+Norway	Beitveitnes	BV_75_G1_RepB	Beitveitnes	5	1	2	75	5,96995	5
+Norway	Beitveitnes	BV_75_G1_RepC	Beitveitnes	5	1	3	75	5,96995	5
+Norway	Beitveitnes	BV_75_G2_RepA	Beitveitnes	5	2	4	75	5,987462	5
+Norway	Beitveitnes	BV_75_G2_RepB	Beitveitnes	5	2	5	75	5,987462	5
+Norway	Beitveitnes	BV_75_G2_RepC	Beitveitnes	5	2	6	75	5,987462	5
+Norway	Hjelleberget	Hj_0_RepA	Hjelleberget	1	1	1	0	5,884	5
+Norway	Hjelleberget	Hj_0_RepB	Hjelleberget	1	1	2	0	5,884	5
+Norway	Hjelleberget	Hj_243_RepA	Hjelleberget	2	1	1	243	5,864	5
+Norway	Hjelleberget	Hj_243_RepB	Hjelleberget	2	1	2	243	5,864	5
+Norway	Hjelleberget	Hj_304_RepA	Hjelleberget	3	1	1	304	5,737	5
+Norway	Hjelleberget	Hj_304_RepB	Hjelleberget	3	1	2	304	5,737	5
+Norway	Hjelleberget	Hj_488_RepA	Hjelleberget	4	1	1	488	2,257	2
+Norway	Hjelleberget	Hj_488_RepB	Hjelleberget	4	1	2	488	2,257	2
+Norway	Hjelleberget	Hj_50_RepA	Hjelleberget	5	1	1	50	5,981	5
+Norway	Hjelleberget	Hj_50_RepB	Hjelleberget	5	1	2	50	5,981	5
+Norway	Hjelleberget	Hj_588_RepA	Hjelleberget	6	1	1	588	2,104	2
+Norway	Hjelleberget	Hj_588_RepB	Hjelleberget	6	1	2	588	2,104	2
+Norway	Karvika	Ka_0_RepA	Karvika	1	1	1	0	5,891	5
+Norway	Karvika	Ka_0_RepB	Karvika	1	1	2	0	5,891	5
+Norway	Karvika	Ka_179_RepA	Karvika	2	1	1	179	5,977	5
+Norway	Karvika	Ka_179_RepB	Karvika	2	1	2	179	5,977	5
+Norway	Karvika	Ka_290_RepA	Karvika	3	1	1	290	2,594	2
+Norway	Karvika	Ka_290_RepB	Karvika	3	1	2	290	2,594	2
+Norway	Karvika	Ka_428_RepA	Karvika	4	1	1	428	2,647	2
+Norway	Karvika	Ka_428_RepB	Karvika	4	1	2	428	2,647	2
+Norway	Karvika	Ka_504_RepA	Karvika	5	1	1	504	2,54	2
+Norway	Karvika	Ka_504_RepB	Karvika	5	1	2	504	2,54	2
+Norway	Nedre Kvarv	NK_0_G1_RepA	Nedre Kvarv	1	1	1	0	4,982143	4
+Norway	Nedre Kvarv	NK_0_G1_RepB	Nedre Kvarv	1	1	2	0	4,982143	4
+Norway	Nedre Kvarv	NK_0_G1_RepC	Nedre Kvarv	1	1	3	0	4,982143	4
+Norway	Nedre Kvarv	NK_0_G2_RepA	Nedre Kvarv	1	2	4	0	5,144766	5
+Norway	Nedre Kvarv	NK_0_G2_RepB	Nedre Kvarv	1	2	5	0	5,144766	5
+Norway	Nedre Kvarv	NK_1330_G1_RepA	Nedre Kvarv	2	1	1	1330	2,457237	2
+Norway	Nedre Kvarv	NK_1330_G1_RepB	Nedre Kvarv	2	1	2	1330	2,457237	2
+Norway	Nedre Kvarv	NK_1330_G1_RepC	Nedre Kvarv	2	1	3	1330	2,457237	2
+Norway	Nedre Kvarv	NK_1330_G2_RepA	Nedre Kvarv	2	2	4	1330	1,676768	2
+Norway	Nedre Kvarv	NK_1330_G2_RepB	Nedre Kvarv	2	2	5	1330	1,676768	2
+Norway	Nedre Kvarv	NK_1330_G2_RepC	Nedre Kvarv	2	2	6	1330	1,676768	2
+Norway	Nedre Kvarv	NK_140_G1_RepA	Nedre Kvarv	3	1	1	140	3,187755	2
+Norway	Nedre Kvarv	NK_140_G1_RepB	Nedre Kvarv	3	1	2	140	3,187755	2
+Norway	Nedre Kvarv	NK_140_G1_RepC	Nedre Kvarv	3	1	3	140	3,187755	2
+Norway	Nedre Kvarv	NK_140_G2_RepA	Nedre Kvarv	3	2	4	140	3,07312	2
+Norway	Nedre Kvarv	NK_140_G2_RepB	Nedre Kvarv	3	2	5	140	3,07312	2
+Norway	Nedre Kvarv	NK_140_G2_RepC	Nedre Kvarv	3	2	6	140	3,07312	2
+Norway	Nedre Kvarv	NK_34_G1_RepA	Nedre Kvarv	4	1	1	34	4,168589	3
+Norway	Nedre Kvarv	NK_34_G1_RepB	Nedre Kvarv	4	1	2	34	4,168589	3
+Norway	Nedre Kvarv	NK_34_G1_RepC	Nedre Kvarv	4	1	3	34	4,168589	3
+Norway	Nedre Kvarv	NK_34_G2_RepA	Nedre Kvarv	4	2	4	34	4,354957	4
+Norway	Nedre Kvarv	NK_34_G2_RepB	Nedre Kvarv	4	2	5	34	4,354957	4
+Norway	Nedre Kvarv	NK_34_G2_RepC	Nedre Kvarv	4	2	6	34	4,354957	4
+Norway	Nedre Kvarv	NK_640_G1_RepA	Nedre Kvarv	5	1	1	640	2,569948	2
+Norway	Nedre Kvarv	NK_640_G1_RepB	Nedre Kvarv	5	1	2	640	2,569948	2
+Norway	Nedre Kvarv	NK_640_G1_RepC	Nedre Kvarv	5	1	3	640	2,569948	2
+Norway	Nedre Kvarv	NK_640_G2_RepA	Nedre Kvarv	5	2	4	640	2,40501	2
+Norway	Nedre Kvarv	NK_640_G2_RepB	Nedre Kvarv	5	2	5	640	2,40501	2
+Norway	Nedre Kvarv	NK_640_G2_RepC	Nedre Kvarv	5	2	6	640	2,40501	2
+Norway	Storvika	ST_0_G1_RepA	Storvika	1	1	1	0	5,981859	5
+Norway	Storvika	ST_0_G1_RepB	Storvika	1	1	2	0	5,981859	5
+Norway	Storvika	ST_0_G1_RepC	Storvika	1	1	3	0	5,981859	5
+Norway	Storvika	ST_0_G2_RepA	Storvika	1	2	4	0	5,982851	5
+Norway	Storvika	ST_0_G2_RepB	Storvika	1	2	5	0	5,982851	5
+Norway	Storvika	ST_0_G2_RepC	Storvika	1	2	6	0	5,982851	5
+Norway	Storvika	ST_300_G1_RepA	Storvika	2	1	1	300	2,395864	2
+Norway	Storvika	ST_300_G1_RepB	Storvika	2	1	2	300	2,395864	2
+Norway	Storvika	ST_300_G1_RepC	Storvika	2	1	3	300	2,395864	2
+Norway	Storvika	ST_300_G2_RepA	Storvika	2	2	4	300	2,429395	2
+Norway	Storvika	ST_300_G2_RepB	Storvika	2	2	5	300	2,429395	2
+Norway	Storvika	ST_300_G2_RepC	Storvika	2	2	6	300	2,429395	2
+Norway	Storvika	ST_610_G1_RepA	Storvika	3	1	1	610	2,026007	2
+Norway	Storvika	ST_610_G1_RepB	Storvika	3	1	2	610	2,026007	2
+Norway	Storvika	ST_610_G1_RepC	Storvika	3	1	3	610	2,026007	2
+Norway	Storvika	ST_610_G2_RepA	Storvika	3	2	4	610	1,879653	2
+Norway	Storvika	ST_610_G2_RepB	Storvika	3	2	5	610	1,879653	2
+Norway	Storvika	ST_610_G2_RepC	Storvika	3	2	6	610	1,879653	2
+Norway	Storvika	ST_68_G1_RepA	Storvika	4	1	1	68	4,700732	4
+Norway	Storvika	ST_68_G1_RepB	Storvika	4	1	2	68	4,700732	4
+Norway	Storvika	ST_68_G1_RepC	Storvika	4	1	3	68	4,700732	4
+Norway	Storvika	ST_68_G2_RepA	Storvika	4	2	4	68	2,479452	2
+Norway	Storvika	ST_68_G2_RepB	Storvika	4	2	5	68	2,479452	2
+Norway	Storvika	ST_68_G2_RepC	Storvika	4	2	6	68	2,479452	2
+Norway	Storvika	ST_900_G1_RepA	Storvika	5	1	1	900	1,955734	2
+Norway	Storvika	ST_900_G1_RepB	Storvika	5	1	2	900	1,955734	2
+Norway	Storvika	ST_900_G1_RepC	Storvika	5	1	3	900	1,955734	2
+Norway	Storvika	ST_900_G2_RepA	Storvika	5	2	4	900	1,657426	2
+Norway	Storvika	ST_900_G2_RepB	Storvika	5	2	5	900	1,657426	2
+Norway	Storvika	ST_900_G2_RepC	Storvika	5	2	6	900	1,657426	2
